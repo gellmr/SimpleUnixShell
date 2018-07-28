@@ -1,0 +1,21 @@
+bin
+foo
+foo.bak
+include
+k
+makefile
+makefile~
+obj
+reallyLong_ProgramName
+source
+testFiles
+15:11 obj
+drwx------ 2 user user 4096 Oct 28  2012 include
+drwx------ 2 user user 4096 Oct 28  2012 source
+drwx------ 3 user user 4096 Oct 28  2012 testFiles
+-rw------- 1 user user    2 Oct 28  2012 foo
+-rw------- 1 user user    2 Oct 28  2012 foo.bak
+-rw------- 1 user user 9281 Oct 28  2012 k
+-rw------- 1 user user 9281 Oct 28  2012 reallyLong_ProgramName
+-rw------- 1 user user  910 Oct 17  2012 makefile
+-rw------- 1 user user  910 Oct 17  2012 makefile~

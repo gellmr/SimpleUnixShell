@@ -1,0 +1,61 @@
+/*
+	File:		shellEngine.h
+	Author:		Mike Gell
+	Created:	17 Oct 2012
+	Modified:	17 Oct 2012
+
+	Carries out given commands.
+*/
+
+#ifndef _SHELLENGINE_H
+#define _SHELLENGINE_H
+
+
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+#include "command.h"
+
+#include "token.h"
+
+
+
+#define MAX_PROMPT_LEN 256
+
+#define DEBUG_MODE 0
+
+#define MAX_PWD_LEN 1024	// I will use a magic number. Bad.
+
+#define MAX_DIR_DEPTH 64	// max depth of folder structure that the mash shell can navigate.
+
+
+int allpipes[MAX_NUM_COMMANDS - 1][2];	// (MAX_NUM_COMMANDS - 1) == the maximum number of pipes that we could possibly have.
+
+
+	/****************************************************************************************
+		Example:
+
+	/home/mike/Desktop/Link to ict310/A2_Gell_Michael/SimpleUnixShell
+
+	dir == {"home", "mike", "Desktop", "Link to ict310", "A2_Gell_Michael", "SimpleUnixShell"} // depth: 6
+
+	*****************************************************************************************/
+char * dir[MAX_DIR_DEPTH];	// contents are allocated and freed as we navigate around the folder structure.
+
+int dirDepth;
+
+
+
+	/**
+	Returns 1 if the given set of commands were all launched successfully.
+	*/	
+int executeCommands(Command command[], int num, char * token[], char * promptString);
+
+
+
+#endif // _SHELLENGINE_H
+

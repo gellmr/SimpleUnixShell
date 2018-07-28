@@ -1,0 +1,228 @@
+/*
+	File:		main.c
+	Author:		Mike Gell
+	Created:	2 Oct 2012
+	Modified:	2 Oct 2012
+
+	Breaks up the input line into a sequence of tokens.
+
+	Perform basic parsing, make a list of commands separated by '|' '&' ';'
+
+	Prints each command.
+
+		For each command, print the sequence of tokens contained in the command.
+
+	Uses the token module from ICT310 Topic7 CprogEx02
+*/
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+#include "../include/token.h"
+
+#include "../include/command.h"
+
+#include "../include/shellEngine.h"
+
+
+
+
+char promptStr[MAX_PROMPT_LEN];
+
+
+
+
+
+int main(int argc, char * argv[])
+{
+	promptStr[0] = '%';	// Default prompt
+
+	promptStr[1] = '\0';	// Null char
+
+
+	printf("\n");
+
+	char inputLine [MAX_NUM_TOKENS];
+
+	inputLine[0] = ' ';
+
+
+	
+
+	/*
+	User must type "exit" to quit the program.
+	*/
+	while(strcmp(inputLine, "exit") != 0)
+	{
+
+
+		// Display the prompt
+
+		// printf("(promptStr %s) ", promptStr);
+
+		printf("%s ", promptStr);
+
+
+
+
+		// Wait for user to enter a line of text.
+
+		if (fgets (inputLine , MAX_NUM_TOKENS , stdin) == NULL)
+		{
+			printf("\nfgets error!\n");
+
+			exit(1);
+		}
+		
+
+
+
+		// Check the user input is not an empty string.
+
+		if
+		(
+			(int)strlen(inputLine) > 0
+
+			&&
+
+			inputLine[0] != '\n'
+		)
+		{
+
+
+			// The length of the input string.
+
+			int len = (int)strlen(inputLine);
+
+
+
+			// This will store tokens.
+
+			char * tokens[MAX_NUM_TOKENS]; 
+
+
+
+
+			// Returns the number of tokens.
+
+			// You cannot use a char * for the "inputLine" argument.
+
+			int tokenCount = tokenise (inputLine, tokens);
+
+			if (tokenCount < 0)
+			{
+				printf("Failed to tokenise. The input line is too big.\n");
+
+				exit(1);
+			}
+			else
+			{
+
+
+
+				printf("\n(completed tokenizing)\n\n");
+		
+				// Print out all the tokens.
+	
+				int t = 0;
+
+				for (t = 0; t < tokenCount; t++)
+				{
+					char * tk = tokens[t];
+
+					if (tk != NULL)
+					{
+						printf("tokens[%d]: %s\n", t, tk);
+					}
+					else
+					{
+						printf("tokens[%d]: NULL\n", t);
+					}
+				}
+
+				printf("\n");
+		
+
+
+
+
+				/*
+				if (DEBUG_MODE)
+				{
+					printf("\n");
+
+					printf("Found %d tokens. InputStr length: %d\n", tokenCount, len);
+				}
+				*/
+
+	
+
+
+
+
+				// Process tokens.
+
+				// Make an array of commands
+
+				Command commands[MAX_NUM_COMMANDS]; // array of command structures
+
+				int c;
+
+				// Initialise each command structure.
+
+				for(c = 0; c < MAX_NUM_COMMANDS; c++)
+				{
+					commands[c].first	= 0;
+					commands[c].last	= 0;
+					commands[c].sep		= NULL;
+					commands[c].argv	= NULL;
+					commands[c].stdin_file	= NULL;	// the default: no stdin  redirection
+					commands[c].stdout_file	= NULL;	// the default: no stdout redirection
+				}
+
+				int numberOfCommands = separateCommands(tokens, commands); // populate array of commands.
+
+				if (numberOfCommands == -5)
+				{
+					printf("\tError - exceeded MAX_NUM_COMMANDS (%d)\n", MAX_NUM_COMMANDS);
+				}
+				else if (numberOfCommands >= 0)
+				{
+					/*
+					if (DEBUG_MODE)
+					{
+						// Display the command, with debug info
+
+						printCommands(commands, numberOfCommands, tokens);
+					}
+					*/
+
+					int execSuccess = executeCommands(commands, numberOfCommands, tokens, promptStr);
+
+					if (execSuccess == -1)
+					{
+						// Exit the shell.
+
+						printf("exiting mash shell...\n\n");
+
+						return 0;
+					}
+				}
+				else
+				{
+					// Tell the user why the command was not accepted
+
+					printError(numberOfCommands);
+				}
+			}
+		}
+
+	} // while(strcmp
+
+	printf("Mash Shell has finished executing.\n\n");
+
+	return 0;
+}
